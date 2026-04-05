@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eurovision 2026 | Live Running Order</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&display=swap');
+
+        :root {
+            --v-pink: #f12e67;
+            --v-purple: #5c2084;
+            --v-cyan: #00c3d7;
+            --row-grad-start: #0a1142;
+            --row-grad-end: #4d0a4f;
+            --pill-dark: rgba(20, 30, 80, 0.6);
+        }
+
+        body {
+            margin: 0; min-height: 100vh;
+            font-family: 'Outfit', sans-serif;
+            color: white;
+            display: flex; flex-direction: column; align-items: center;
+            background: linear-gradient(-45deg, #00c3d7, #5c2084, #f12e67, #ffb800);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow-x: hidden;
+            padding-bottom: 50px;
+        }
+
+        @keyframes gradientBG { 0% {background-position:0% 50%} 50% {background-position:100% 50%} 100% {background-position:0% 50%} }
+
+        nav {
+            margin: 40px 0 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+            background: rgba(0,0,0,0.5); padding: 8px; border-radius: 50px;
+            backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.2);
+            z-index: 100;
+        }
+        .tab { padding: 10px 25px; border-radius: 30px; cursor: pointer; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; transition: 0.3s; color: #ccc; }
+        .tab.active { background: white; color: var(--v-purple); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+
+        .container { width: 95%; max-width: 1100px; text-align: center; }
+        .logo-wrap { width: 100%; max-width: 280px; margin: 0 auto 30px; }
+        .logo-wrap img { width: 100%; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.4)); }
+
+        #timer-display { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; }
+        .card { background: rgba(0,0,0,0.4); border-radius: 15px; min-width: 80px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        .num { font-size: 2.2rem; font-weight: 900; display: block; line-height: 1; }
+        .lab { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; opacity: 0.7; }
+
+        #lineup-title { font-size: 1.3rem; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        #lineup-title span { color: var(--v-pink); }
+
+        #countries-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+
+        .row { display: flex; align-items: center; width: 100%; animation: slideIn 0.5s ease forwards; opacity: 0; }
+        @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .run-number { font-size: 2rem; font-weight: 900; width: 50px; text-align: center; margin-right: 15px; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .run-star { font-size: 1.2rem; color: var(--v-cyan); width: 50px; text-align: center; margin-right: 15px; }
+
+        .row-content {
+            flex-grow: 1; display: flex; align-items: center; justify-content: space-between;
+            background: linear-gradient(90deg, var(--row-grad-start) 0%, var(--row-grad-end) 100%);
+            border-radius: 50px; padding: 10px 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: 0.3s; cursor: pointer; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .row-content:hover { transform: scale(1.01); border-color: white; }
+
+        .pill-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .pill-country { 
+            background: white; color: #1a1a2e; padding: 6px 20px; border-radius: 30px; 
+            font-size: 0.85rem; font-weight: 900; 
+        }
+
+        .pill-info { background: var(--pill-dark); border: 1px solid rgba(255,255,255,0.1); padding: 8px 18px; border-radius: 30px; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; }
+        .pill-pq { background: var(--v-cyan); color: #000; font-weight: 900; font-size: 0.7rem; }
+
+        #popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: white; color: black; padding: 50px; border-radius: 40px; z-index: 2000; display: none; flex-direction: column; align-items: center; box-shadow: 0 50px 100px rgba(0,0,0,0.7); text-align: center; }
+        #popup.active { display: flex; transform: translate(-50%, -50%) scale(1); }
+        #popup .country-label { font-size: 1.2rem; font-weight: 900; color: var(--v-pink); text-transform: uppercase; margin-bottom: 5px; }
+        .close-btn { margin-top: 30px; background: #222; color: white; border: none; padding: 12px 30px; border-radius: 50px; cursor: pointer; }
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1500; display: none; backdrop-filter: blur(10px); }
+
+        @media (max-width: 768px) { .row-content { flex-direction: column; align-items: flex-start; border-radius: 20px; padding: 15px; } }
+    </style>
+</head>
+<body>
+    <div id="overlay" onclick="closePopup()"></div>
+    <nav>
+        <div class="tab active" onclick="changeView('sf1', this)">Semi 1</div>
+        <div class="tab" onclick="changeView('sf2', this)">Semi 2</div>
+        <div class="tab" onclick="changeView('gf', this)">Grand Final</div>
+    </nav>
+
+    <div class="container">
+        <div class="logo-wrap"><img src="https://upload.wikimedia.org/wikipedia/de/1/10/Eurovision_Song_Contest_2026_Logo.svg"></div>
+        <div id="timer-display"></div>
+        <div id="lineup-title">FIRST SEMI-FINAL <span>RUNNING ORDER</span></div>
+        <div id="countries-grid"></div>
+    </div>
+
+    <div id="popup">
+        <div class="country-label" id="pop-country">Country</div>
+        <h2 id="pop-artist">Artist</h2>
+        <p id="pop-song">"Song Title"</p>
+        <button class="close-btn" onclick="closePopup()">CLOSE</button>
+    </div>
+
+    <script>
+        const times = { sf1: "May 12, 2026 21:00:00", sf2: "May 14, 2026 21:00:00", gf: "May 16, 2026 21:00:00" };
+        
+        const participants = {
+            sf1: [
+                {n:"Moldova", a:"Satoshi", s:"Viva, Moldova!", num:"01"},
+                {n:"Sweden", a:"FELICIA", s:"My System", num:"02"},
+                {n:"Croatia", a:"LELEK", s:"Andromeda", num:"03"},
+                {n:"Greece", a:"Akylas", s:"Ferto", num:"04"},
+                {n:"Portugal", a:"Bandidos do Cante", s:"Rosa", num:"05"},
+                {n:"Georgia", a:"Bzikebi", s:"On Replay", num:"06"},
+                {n:"Italy", a:"Sal Da Vinci", s:"Per Sempre Sì", pq: true},
+                {n:"Finland", a:"Linda Lampenius x Pete Parkkonen", s:"Liekinheitin", num:"07"},
+                {n:"Montenegro", a:"Tamara Živković", s:"Nova Zora", num:"08"},
+                {n:"Estonia", a:"Vanilla Ninja", s:"Too Epic To Be True", num:"09"},
+                {n:"Israel", a:"Noam Bettan", s:"Michelle", num:"10"},
+                {n:"Germany", a:"Sarah Engels", s:"Fire", pq: true},
+                {n:"Belgium", a:"ESSYLA", s:"Dancing on the Ice", num:"11"},
+                {n:"Lithuania", a:"Lion Ceccah", s:"Sólo Quiero Más", num:"12"},
+                {n:"San Marino", a:"SENHIT", s:"Superstar", num:"13"},
+                {n:"Poland", a:"ALICJA", s:"Pray", num:"14"},
+                {n:"Serbia", a:"LAVINA", s:"Kraj Mene", num:"15"}
+            ],
+            sf2: [
+                {n:"Bulgaria", a:"DARA", s:"Bangaranga", num:"01"},
+                {n:"Azerbaijan", a:"JIVA", s:"Just Go", num:"02"},
+                {n:"Romania", a:"Alexandra Căpitănescu", s:"Choke Me", num:"03"},
+                {n:"Luxembourg", a:"Eva Marija", s:"Mother Nature", num:"04"},
+                {n:"Czechia", a:"Daniel Zizka", s:"CROSSROADS", num:"05"},
+                {n:"France", a:"Monroe", s:"Regarde !", pq: true},
+                {n:"Armenia", a:"SIMÓN", s:"Paloma Rumba", num:"06"},
+                {n:"Switzerland", a:"Veronica Fusaro", s:"Alice", num:"07"},
+                {n:"Cyprus", a:"Antigoni", s:"JALLA", num:"08"},
+                {n:"Austria", a:"COSMÓ", s:"Tanzschein", pq: true},
+                {n:"Latvia", a:"Atvara", s:"Ēnā", num:"09"},
+                {n:"Denmark", a:"Søren Torpegaard Lund", s:"Før Vi Går Hjem", num:"10"},
+                {n:"Australia", a:"Delta Goodrem", s:"Eclipse", num:"11"},
+                {n:"Ukraine", a:"LELÉKA", s:"Ridnym", num:"12"},
+                {n:"United Kingdom", a:"LOOK MUM NO COMPUTER", s:"Eins, Zwei, Drei", pq: true},
+                {n:"Albania", a:"Alis", s:"Nân", num:"13"},
+                {n:"Malta", a:"AIDAN", s:"Bella", num:"14"},
+                {n:"Norway", a:"JONAS LOVV", s:"YA YA YA", num:"15"}
+            ],
+            gf: [
+                {n:"Italy", a:"Sal Da Vinci", s:"Per Sempre Sì", pq: true, num: "01"},
+                {n:"Germany", a:"Sarah Engels", s:"Fire", pq: true, num: "02"},
+                {n:"France", a:"Monroe", s:"Regarde !", pq: true, num: "03"},
+                {n:"Austria", a:"COSMÓ", s:"Tanzschein", pq: true, num: "04"},
+                {n:"United Kingdom", a:"LOOK MUM NO COMPUTER", s:"Eins, Zwei, Drei", pq: true, num: "05"}
+            ]
+        };
+
+        let targetTime = times.sf1;
+
+        function changeView(view, el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            const title = document.getElementById('lineup-title');
+            if(view === 'sf1') { title.innerHTML = "FIRST SEMI-FINAL <span>RUNNING ORDER</span>"; targetTime = times.sf1; }
+            else if(view === 'sf2') { title.innerHTML = "SECOND SEMI-FINAL <span>RUNNING ORDER</span>"; targetTime = times.sf2; }
+            else { title.innerHTML = "GRAND FINAL <span>PARTICIPANTS</span>"; targetTime = times.gf; }
+            renderList(view);
+        }
+
+        function renderList(view) {
+            const grid = document.getElementById('countries-grid');
+            grid.innerHTML = "";
+            const list = participants[view] || [];
+            
+            list.forEach((p, i) => {
+                const row = document.createElement('div');
+                row.className = 'row';
+                row.style.animationDelay = (i * 0.05) + "s";
+                const isPQInSemi = p.pq && view !== 'gf';
+
+                row.innerHTML = `
+                    <div class="${isPQInSemi ? 'run-star' : 'run-number'}">${isPQInSemi ? '★' : p.num}</div>
+                    <div class="row-content" onclick="openPopup('${p.n}', '${p.a}', '${p.s}')">
+                        <div class="pill-group">
+                            <div class="pill-country">${p.n}</div>
+                            ${p.pq ? '<div class="pill-info pill-pq">PRE-QUALIFIED</div>' : ''}
+                            <div class="pill-info">🎤 ${p.a}</div>
+                            <div class="pill-info">🎵 ${p.s}</div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(row);
+            });
+        }
+
+        function openPopup(n, a, s) {
+            document.getElementById('pop-country').innerText = n;
+            document.getElementById('pop-artist').innerText = a;
+            document.getElementById('pop-song').innerText = `"${s}"`;
+            document.getElementById('popup').classList.add('active');
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('popup').classList.remove('active');
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function updateTimer() {
+            const diff = new Date(targetTime) - new Date();
+            const timer = document.getElementById('timer-display');
+            if (diff <= 0) { timer.innerHTML = "<h1>LIVE FROM VIENNA</h1>"; return; }
+            const d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
+            timer.innerHTML = `
+                <div class="card"><span class="num">${d}</span><span class="lab">Days</span></div>
+                <div class="card"><span class="num">${h}</span><span class="lab">Hrs</span></div>
+                <div class="card"><span class="num">${m}</span><span class="lab">Min</span></div>
+                <div class="card"><span class="num">${s}</span><span class="lab">Sec</span></div>
+            `;
+        }
+
+        setInterval(updateTimer, 1000);
+        updateTimer();
+        renderList('sf1');
+    </script>
+</body>
+</html>
