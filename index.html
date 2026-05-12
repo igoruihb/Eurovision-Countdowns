@@ -129,6 +129,8 @@
     </style>
 </head>
 <body>
+    <audio id="theme-song" src="http://googleusercontent.com/file_content/0"></audio>
+
     <div id="flash-overlay"></div>
     <div class="stage-light light-1"></div>
     <div class="stage-light light-2"></div>
@@ -149,6 +151,9 @@
     </div>
 
     <script>
+        const themeAudio = document.getElementById('theme-song');
+        let audioTriggered = false;
+
         const participants = {
             sf1: [
                 {n:"Moldova", a:"Satoshi", s:"Viva, Moldova!", num:"01"},
@@ -213,6 +218,7 @@
             currentView = view;
             const titles = {sf1: "First Semi-Final", sf2: "Second Semi-Final", gf: "Grand Final"};
             document.getElementById('lineup-title').innerHTML = titles[view] + " <span>Running Order</span>";
+            audioTriggered = false; // Reset audio trigger for the new view
             renderList();
             updateTimer();
         }
@@ -243,6 +249,13 @@
             const targetDate = eventDates[currentView];
             const diff = targetDate - now;
             const display = document.getElementById('timer-display');
+
+            // Audio Trigger Logic: 2 mins 53 secs (173,000 ms) before countdown ends
+            const triggerTimeMs = 173000;
+            if (diff <= triggerTimeMs && diff > 0 && !audioTriggered) {
+                themeAudio.play();
+                audioTriggered = true;
+            }
 
             const showEndTime = targetDate + (4 * 60 * 60 * 1000); 
             if (now >= showEndTime) {
