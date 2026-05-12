@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ESC 2026 | Vienna Live</title>
+    <title>Eurovision Song Contest 2026-Countdown</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&display=swap');
 
@@ -29,109 +29,108 @@
 
         @keyframes gradientBG { 0% {background-position:0% 50%} 50% {background-position:100% 50%} 100% {background-position:0% 50%} }
 
-        /* --- LOGO SECTION --- */
-        .logo-wrap { 
-            width: 90%;
-            max-width: 480px; 
-            margin: 40px auto 20px; 
-            display: flex;
-            justify-content: center;
+        /* THE CLICK OVERLAY */
+        #audio-unlock {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); 
+            backdrop-filter: blur(20px);
+            z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.6s ease;
         }
 
-        .logo-wrap img {
-            width: 100%;
-            height: auto;
-            filter: drop-shadow(0 0 20px rgba(0,0,0,0.3));
+        .unlock-btn {
+            background: white; color: black; border: none;
+            padding: 18px 50px; border-radius: 50px;
+            font-family: 'Outfit'; font-weight: 900; font-size: 1.3rem;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
+            box-shadow: 0 0 40px rgba(255,255,255,0.4);
+            transition: 0.3s;
         }
+        .unlock-btn:hover { transform: scale(1.05); background: var(--v-cyan); color: white; }
 
-        /* --- SPOTLIGHTS --- */
-        .stage-light {
-            position: fixed; top: -50%; width: 35vw; height: 200%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.25), transparent);
-            pointer-events: none; opacity: 0; transition: opacity 2s ease-in-out; z-index: 1;
-        }
-        .light-1 { left: -5%; transform: rotate(25deg); }
-        .light-2 { right: -5%; transform: rotate(-25deg); }
-
-        .show-lights .stage-light { opacity: 1; }
-        .show-lights .light-1 { animation: sweepLeft 8s infinite alternate ease-in-out; }
-        .show-lights .light-2 { animation: sweepRight 8s infinite alternate ease-in-out; }
-
-        @keyframes sweepLeft { 0% { transform: rotate(15deg); } 100% { transform: rotate(45deg); } }
-        @keyframes sweepRight { 0% { transform: rotate(-15deg); } 100% { transform: rotate(-45deg); } }
-
-        /* --- TIMER TRANSITIONS --- */
-        #timer-display { 
-            display: flex; gap: 10px; justify-content: center; 
-            margin-bottom: 25px; min-height: 280px; align-items: center;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            perspective: 1000px;
-        }
-
-        .phase-change { animation: phaseFlash 0.6s ease-out; }
-        @keyframes phaseFlash {
-            0% { transform: scale(0.8); filter: brightness(5); opacity: 0; }
-            100% { transform: scale(1); filter: brightness(1); opacity: 1; }
-        }
-
-        .card { background: rgba(0,0,0,0.6); padding: 15px; border-radius: 20px; min-width: 90px; border: 1px solid rgba(255,255,255,0.1); }
-        .num { font-size: 2.5rem; font-weight: 900; display: block; }
-        .lab { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; margin-top: 5px; }
-        
-        .sixty-sec { font-size: 7.5rem; font-weight: 900; animation: pulseGlow 2s infinite; }
-        .thirty-sec { font-size: 11.5rem; font-weight: 900; text-shadow: 0 0 30px var(--v-cyan); animation: pulse 1s infinite; }
-        .super-giant-sec { font-size: 17rem; font-weight: 900; text-shadow: 0 0 60px var(--v-pink); animation: pulse 0.6s infinite; }
-        .ultra-giant-sec { 
-            font-size: 38rem; font-weight: 900; color: var(--v-yellow);
-            text-shadow: 0 0 100px white, 0 0 200px var(--v-pink); 
-            animation: impact 0.3s infinite alternate;
-            line-height: 0.7;
-        }
-
-        /* LIVE TRANSITION */
-        #flash-overlay {
+        /* EFFECT LAYERS */
+        #strobe-fx {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: white; opacity: 0; pointer-events: none; z-index: 9999;
         }
-        .trigger-flash { animation: screenFlash 0.8s ease-out forwards; }
-        @keyframes screenFlash { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+        .flash-active { animation: flashAnim 0.12s ease-out; }
+        @keyframes flashAnim { 0% { opacity: 0.7; } 100% { opacity: 0; } }
 
-        .live-status { display: flex; align-items: center; justify-content: center; gap: 20px; font-size: 4.5rem; font-weight: 900; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .dot { width: 35px; height: 35px; background: #ff0000; border-radius: 50%; box-shadow: 0 0 40px #ff0000; animation: blink 0.8s infinite; }
+        /* HEADER & LIGHTS */
+        .logo-wrap { width: 90%; max-width: 450px; margin: 40px auto 20px; display: flex; justify-content: center; }
+        .logo-wrap img { width: 100%; height: auto; filter: drop-shadow(0 0 20px rgba(0,0,0,0.3)); }
 
-        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes blink { 0%, 100% { opacity: 1; transform: scale(1.2); } 50% { opacity: 0.1; transform: scale(0.8); } }
+        .stage-light {
+            position: fixed; top: -50%; width: 45vw; height: 200%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent);
+            pointer-events: none; opacity: 0; transition: opacity 2s; z-index: 1;
+        }
+        .light-1 { left: -5%; transform: rotate(25deg); }
+        .light-2 { right: -5%; transform: rotate(-25deg); }
+        
+        .energy-high .stage-light { opacity: 1; }
+        .energy-high .light-1 { animation: sweepLeft 4s infinite alternate ease-in-out; }
+        .energy-high .light-2 { animation: sweepRight 4s infinite alternate ease-in-out; }
+        
+        @keyframes sweepLeft { 0% { transform: rotate(10deg); } 100% { transform: rotate(40deg); } }
+        @keyframes sweepRight { 0% { transform: rotate(-10deg); } 100% { transform: rotate(-40deg); } }
+
+        /* TIMER STYLES */
+        #timer-display { 
+            display: flex; gap: 12px; justify-content: center; 
+            margin-bottom: 30px; min-height: 280px; align-items: center;
+            perspective: 1000px; transition: transform 0.05s ease-out;
+        }
+        .beat-kick { transform: scale(1.15) translateZ(50px); filter: brightness(1.4); }
+
+        .card { background: rgba(0,0,0,0.7); padding: 18px; border-radius: 20px; min-width: 100px; border: 1px solid rgba(255,255,255,0.1); transition: 0.1s; }
+        .num { font-size: 2.8rem; font-weight: 900; display: block; }
+        .lab { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.6; }
+        
+        .sixty-sec { font-size: 8rem; font-weight: 900; animation: pulseGlow 2s infinite; }
+        .thirty-sec { font-size: 12rem; font-weight: 900; text-shadow: 0 0 30px var(--v-cyan); animation: pulse 1s infinite; }
+        .super-giant-sec { font-size: 18rem; font-weight: 900; text-shadow: 0 0 60px var(--v-pink); animation: pulse 0.6s infinite; }
+        .ultra-giant-sec { font-size: 38rem; font-weight: 900; color: var(--v-yellow); line-height: 0.7; animation: impact 0.3s infinite alternate; }
+
+        .live-status { display: flex; align-items: center; gap: 20px; font-size: 4rem; font-weight: 900; }
+        .dot { width: 30px; height: 30px; background: #ff0000; border-radius: 50%; box-shadow: 0 0 30px #ff0000; animation: blink 0.8s infinite; }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        @keyframes pulseGlow { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; transform: scale(1.02); } }
-        @keyframes impact { from { transform: scale(0.9); } to { transform: scale(1.1); } }
+        @keyframes impact { from { transform: scale(0.95); } to { transform: scale(1.05); } }
 
-        /* --- LIST & UI --- */
-        nav { margin: 20px 0; display: flex; gap: 8px; background: rgba(0,0,0,0.8); padding: 8px; border-radius: 50px; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); z-index: 1000; }
-        .tab { padding: 10px 22px; border-radius: 30px; cursor: pointer; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; transition: 0.3s; color: rgba(255,255,255,0.4); }
+        /* NAVIGATION & LIST */
+        nav { margin: 20px 0; display: flex; gap: 8px; background: rgba(0,0,0,0.8); padding: 8px; border-radius: 50px; z-index: 1000; }
+        .tab { padding: 12px 25px; border-radius: 30px; cursor: pointer; font-size: 0.85rem; font-weight: 900; text-transform: uppercase; transition: 0.3s; color: rgba(255,255,255,0.4); }
         .tab.active { background: white; color: var(--v-purple); }
+        
         .container { width: 95%; max-width: 900px; text-align: center; z-index: 10; }
-        
         #countries-grid { display: flex; flex-direction: column; gap: 12px; }
-        .row { display: flex; align-items: center; animation: slideIn 0.5s ease forwards; opacity: 0; }
+        .row { display: flex; align-items: center; opacity: 0; animation: slideIn 0.5s forwards; }
         @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .run-number { font-size: 2rem; font-weight: 900; width: 65px; font-style: italic; opacity: 0.8; text-align: center; }
-        .row-content { flex-grow: 1; display: flex; align-items: center; padding: 15px 30px; background: var(--row-grad); border-radius: 60px; border: 1px solid rgba(255,255,255,0.1); }
-        .pill-country { background: white; color: #000; padding: 7px 20px; border-radius: 25px; font-weight: 900; margin-right: 15px; min-width: 130px; }
-        .pill-info { background: rgba(255,255,255,0.12); padding: 7px 16px; border-radius: 25px; font-size: 0.9rem; margin-right: 10px; }
-        
+        .run-number { font-size: 2rem; font-weight: 900; width: 70px; font-style: italic; opacity: 0.7; }
+        .row-content { flex-grow: 1; display: flex; align-items: center; padding: 18px 35px; background: var(--row-grad); border-radius: 60px; border: 1px solid rgba(255,255,255,0.1); }
+        .pill-country { background: white; color: #000; padding: 8px 22px; border-radius: 25px; font-weight: 900; margin-right: 15px; }
+
         @media (max-width: 768px) {
-            .logo-wrap { max-width: 300px; }
-            .ultra-giant-sec { font-size: 18rem; }
-            .super-giant-sec { font-size: 10rem; }
-            .live-status { font-size: 2.2rem; }
-            #timer-display { min-height: 200px; }
+            .ultra-giant-sec { font-size: 16rem; }
+            .live-status { font-size: 2.5rem; }
         }
     </style>
 </head>
 <body>
-    <audio id="theme-song" src="http://googleusercontent.com/file_content/0"></audio>
 
-    <div id="flash-overlay"></div>
+    <div id="strobe-fx"></div>
+
+    <div id="audio-unlock">
+        <img src="https://storage.googleapis.com/eurovision-com.appspot.com/renditions/public/cms/frame-2147206933png/Frame%202147206933-width%3D600.png" width="200" style="margin-bottom: 40px;">
+        <button class="unlock-btn" onclick="startExperience()">Enter the Vienna Countdown</button>
+        <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.5; letter-spacing: 1px;">ENABLES THE SONG AT THE END🤫🤫🤫</p>
+    </div>
+
+    <audio id="theme-song" src="https://www.image2url.com/r2/default/audio/1778596845793-0034c499-263a-42cb-8aca-a66fcb8ff833.mp3" preload="auto"></audio>
+
     <div class="stage-light light-1"></div>
     <div class="stage-light light-2"></div>
 
@@ -143,16 +142,67 @@
 
     <div class="container">
         <div class="logo-wrap">
-            <img src="https://storage.googleapis.com/eurovision-com.appspot.com/renditions/public/cms/frame-2147206933png/Frame%202147206933-width%3D600.png" alt="ESC 2026 Logo">
+            <img src="https://storage.googleapis.com/eurovision-com.appspot.com/renditions/public/cms/frame-2147206933png/Frame%202147206933-width%3D600.png">
         </div>
         <div id="timer-display"></div>
-        <h3 id="lineup-title" style="letter-spacing:3px; text-transform:uppercase; margin-bottom:25px;">First Semi-Final <span>Running Order</span></h3>
+        <h3 id="lineup-title" style="letter-spacing:4px; text-transform:uppercase; margin-bottom:30px;">First Semi-Final <span>Running Order</span></h3>
         <div id="countries-grid"></div>
     </div>
 
     <script>
         const themeAudio = document.getElementById('theme-song');
+        const timerDisplay = document.getElementById('timer-display');
+        const strobe = document.getElementById('strobe-fx');
+        
+        let audioUnlocked = false;
         let audioTriggered = false;
+        let isEnergyHigh = false;
+
+        function startExperience() {
+            const overlay = document.getElementById('audio-unlock');
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.display = 'none'; }, 600);
+
+            themeAudio.play().then(() => {
+                themeAudio.pause();
+                themeAudio.currentTime = 0;
+                audioUnlocked = true;
+                requestAnimationFrame(syncVisuals);
+            }).catch(e => {
+                audioUnlocked = true;
+                requestAnimationFrame(syncVisuals);
+            });
+        }
+
+        function triggerFlash() {
+            strobe.classList.remove('flash-active');
+            void strobe.offsetWidth; // Reset animation
+            strobe.classList.add('flash-active');
+        }
+
+        function triggerBump() {
+            timerDisplay.classList.add('beat-kick');
+            setTimeout(() => timerDisplay.classList.remove('beat-kick'), 80);
+        }
+
+        function syncVisuals() {
+            const time = themeAudio.currentTime;
+
+            // ANALYSIS OF NEW TRACK
+            // Main Drop activates lights and background speed
+            if (time >= 39.1 && !isEnergyHigh) {
+                document.body.classList.add('energy-high');
+                isEnergyHigh = true;
+            }
+
+            // Sync Pulsing to Kick Drum (~140 BPM) during energy peaks
+            if (isEnergyHigh && (Math.floor(time * 1000) % 428 < 20)) {
+                triggerBump();
+                if(Math.random() > 0.8) triggerFlash();
+            }
+
+            if (!themeAudio.paused) requestAnimationFrame(syncVisuals);
+        }
 
         const participants = {
             sf1: [
@@ -210,7 +260,6 @@
         };
 
         let currentView = 'sf1';
-        let lastPhase = "";
 
         function changeView(view, el) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -218,7 +267,7 @@
             currentView = view;
             const titles = {sf1: "First Semi-Final", sf2: "Second Semi-Final", gf: "Grand Final"};
             document.getElementById('lineup-title').innerHTML = titles[view] + " <span>Running Order</span>";
-            audioTriggered = false; // Reset audio trigger for the new view
+            audioTriggered = false; 
             renderList();
             updateTimer();
         }
@@ -230,82 +279,40 @@
             list.forEach((p, i) => {
                 const row = document.createElement('div');
                 row.className = 'row';
-                row.style.animationDelay = (i * 0.04) + "s";
+                row.style.animationDelay = (i * 0.05) + "s";
                 const num = (p.pq && currentView !== 'gf') ? '★' : p.num;
-                row.innerHTML = `<div class="run-number">${num}</div><div class="row-content"><div class="pill-country">${p.n}</div><div class="pill-info">🎤 ${p.a}</div><div class="pill-info">🎵 ${p.s}</div></div>`;
+                row.innerHTML = `<div class="run-number">${num}</div><div class="row-content"><div class="pill-country">${p.n}</div><div style="font-size:0.9rem; opacity:0.8;">${p.a} — "${p.s}"</div></div>`;
                 grid.appendChild(row);
             });
-        }
-
-        function triggerPhaseAnimation() {
-            const display = document.getElementById('timer-display');
-            display.classList.remove('phase-change');
-            void display.offsetWidth;
-            display.classList.add('phase-change');
         }
 
         function updateTimer() {
             const now = new Date().getTime();
             const targetDate = eventDates[currentView];
             const diff = targetDate - now;
-            const display = document.getElementById('timer-display');
 
-            // Audio Trigger Logic: 2 mins 53 secs (173,000 ms) before countdown ends
-            const triggerTimeMs = 173000;
-            if (diff <= triggerTimeMs && diff > 0 && !audioTriggered) {
+            if (diff <= 173000 && diff > 0 && !audioTriggered && audioUnlocked) {
                 themeAudio.play();
                 audioTriggered = true;
             }
 
-            const showEndTime = targetDate + (4 * 60 * 60 * 1000); 
-            if (now >= showEndTime) {
-                display.innerHTML = currentView === 'gf' ? "<h2>SEE YOU IN 2027</h2>" : "<h3>WATCH THE GRAND FINAL ON<br>MAY 16th 21:00 CEST</h3>";
-                document.body.classList.remove('show-lights');
-                return;
-            }
-
-            if (diff <= 60000 && diff > 0) document.body.classList.add('show-lights');
-            else if (diff > 60000) document.body.classList.remove('show-lights');
-
             if (diff <= 0) {
-                if(lastPhase !== "live") {
-                    document.getElementById('flash-overlay').classList.add('trigger-flash');
-                    lastPhase = "live";
-                }
-                display.innerHTML = `<div class="live-status"><div class="dot"></div> LIVE NOW</div>`;
+                timerDisplay.innerHTML = `<div class="live-status"><div class="dot"></div> LIVE NOW</div>`;
                 return;
             }
 
             const totalSecs = Math.ceil(diff / 1000);
-            let currentPhase = "";
-            let content = "";
-
-            if (totalSecs <= 3) {
-                currentPhase = "ultra";
-                content = `<div class="ultra-giant-sec">${totalSecs}</div>`;
-            } else if (totalSecs <= 10) {
-                currentPhase = "super";
-                content = `<div class="super-giant-sec">${totalSecs}</div>`;
-            } else if (totalSecs <= 30) {
-                currentPhase = "thirty";
-                content = `<div class="thirty-sec">${totalSecs}</div>`;
-            } else if (totalSecs <= 60) {
-                currentPhase = "sixty";
-                content = `<div class="sixty-sec">${totalSecs}</div>`;
-            } else {
-                currentPhase = "normal";
+            if (totalSecs <= 3) timerDisplay.innerHTML = `<div class="ultra-giant-sec">${totalSecs}</div>`;
+            else if (totalSecs <= 10) timerDisplay.innerHTML = `<div class="super-giant-sec">${totalSecs}</div>`;
+            else if (totalSecs <= 30) timerDisplay.innerHTML = `<div class="thirty-sec">${totalSecs}</div>`;
+            else if (totalSecs <= 60) timerDisplay.innerHTML = `<div class="sixty-sec">${totalSecs}</div>`;
+            else {
                 const d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
-                content = (d > 0 ? `<div class="card"><span class="num">${d}</span><span class="lab">DAYS</span></div>` : "") +
-                          (h > 0 || d > 0 ? `<div class="card"><span class="num">${h}</span><span class="lab">HRS</span></div>` : "") +
-                          (m > 0 || h > 0 || d > 0 ? `<div class="card"><span class="num">${m}</span><span class="lab">MIN</span></div>` : "") +
-                          `<div class="card"><span class="num">${s}</span><span class="lab">SEC</span></div>`;
+                timerDisplay.innerHTML = (d > 0 ? `<div class="card"><span class="num">${d}</span><span class="lab">DAYS</span></div>` : "") +
+                                    `<div class="card"><span class="num">${h}</span><span class="lab">HRS</span></div>` +
+                                    `<div class="card"><span class="num">${m}</span><span class="lab">MIN</span></div>` +
+                                    `<div class="card"><span class="num">${s}</span><span class="lab">SEC</span></div>`;
             }
-
-            if(lastPhase !== currentPhase) {
-                triggerPhaseAnimation();
-                lastPhase = currentPhase;
-            }
-            display.innerHTML = content;
         }
 
         setInterval(updateTimer, 1000);
