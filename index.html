@@ -13,102 +13,188 @@
             --v-cyan: #00c3d7;
             --v-yellow: #ffb800;
             --row-grad: linear-gradient(90deg, #0a1142, #4d0a4f);
-            --transition-smooth: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        html, body { 
-            margin: 0; 
-            padding: 0; 
-            width: 100%;
-            height: 100%; /* Changed to fixed height to prevent ghost scrolling */
-        }
-
         body {
+            margin: 0; min-height: 100vh;
             font-family: 'Outfit', sans-serif; color: white;
+            display: flex; flex-direction: column; align-items: center;
             background: linear-gradient(-45deg, var(--v-cyan), var(--v-purple), var(--v-pink), var(--v-yellow));
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
-            overflow-x: hidden;
-            perspective: 1500px;
+            overflow-x: hidden; padding-bottom: 50px;
         }
 
         @keyframes gradientBG { 0% {background-position:0% 50%} 50% {background-position:100% 50%} 100% {background-position:0% 50%} }
 
-        #viewport-wrapper {
-            width: 100%; 
-            min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center;
-            transform-style: preserve-3d;
-            padding-bottom: 20px; /* Minimal padding to prevent touching the edge */
+        /* --- INTRO ANIMATION SEQUENCE --- */
+        #intro-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #05081f; 
+            z-index: 10000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease, transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .intro-hidden { opacity: 0; pointer-events: none; transform: scale(1.3); }
+        .intro-text-main {
+            font-size: 5rem; font-weight: 900; text-transform: uppercase;
+            background: linear-gradient(90deg, var(--v-cyan), var(--v-pink), var(--v-yellow));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: introPulse 2s ease-in-out infinite;
+            letter-spacing: 8px; text-align: center; margin: 0;
+        }
+        .intro-text-sub {
+            font-size: 1.2rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 12px; margin-top: 10px; color: rgba(255,255,255,0.7);
+            animation: slideUpSub 1s ease-out forwards;
+            opacity: 0; transform: translateY(20px); animation-delay: 0.3s;
         }
 
-        .intro-active #viewport-wrapper {
-            animation: cinematicCamera 10s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            pointer-events: none;
+        @keyframes introPulse {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(241, 46, 103, 0.4)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 25px rgba(0, 195, 215, 0.6)); transform: scale(1.03); }
         }
+        @keyframes slideUpSub { to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes cinematicCamera {
-            0% { transform: translateZ(700px) rotateX(15deg) translateY(400px); filter: brightness(0); }
-            15% { filter: brightness(1); }
-            50% { transform: translateZ(300px) rotateX(-10deg) translateY(-100px); }
-            100% { transform: translateZ(0) rotateX(0) translateY(0); filter: brightness(1); }
+        /* --- MAIN CONTENT ENTRANCE --- */
+        .main-wrapper {
+            opacity: 0; transform: translateY(40px);
+            transition: opacity 1s ease 0.6s, transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.6s;
+            width: 100%; display: flex; flex-direction: column; align-items: center;
         }
+        body.show-main .main-wrapper { opacity: 1; transform: translateY(0); }
 
-        .logo-wrap { width: 90%; max-width: 450px; margin: 40px auto 10px; animation: logoFloat 4s ease-in-out infinite; }
+        /* --- LOGO SECTION --- */
+        .logo-wrap { 
+            width: 90%; max-width: 480px; margin: 40px auto 20px; 
+            display: flex; justify-content: center;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0.5);
+        }
+        body.show-main .logo-wrap { transform: scale(1); }
         .logo-wrap img { width: 100%; height: auto; filter: drop-shadow(0 0 20px rgba(0,0,0,0.3)); }
-        @keyframes logoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        nav { 
-            margin: 20px 0; display: flex; gap: 8px; 
-            background: rgba(0,0,0,0.8); padding: 8px; border-radius: 50px; 
-            border: 1px solid rgba(255,255,255,0.1); z-index: 100;
+        /* --- SPOTLIGHTS --- */
+        .stage-light {
+            position: fixed; top: -50%; width: 35vw; height: 200%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.25), transparent);
+            pointer-events: none; opacity: 0; transition: opacity 2s ease-in-out; z-index: 1;
         }
-        .tab { padding: 10px 25px; border-radius: 30px; cursor: pointer; font-size: 0.8rem; font-weight: 900; color: rgba(255,255,255,0.4); transition: var(--transition-smooth); }
-        .tab.active { background: white; color: var(--v-purple); box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        .light-1 { left: -5%; transform: rotate(25deg); }
+        .light-2 { right: -5%; transform: rotate(-25deg); }
+        .show-lights .stage-light { opacity: 1; }
+        .show-lights .light-1 { animation: sweepLeft 8s infinite alternate ease-in-out; }
+        .show-lights .light-2 { animation: sweepRight 8s infinite alternate ease-in-out; }
 
-        .container { width: 98%; max-width: 1100px; text-align: center; z-index: 10; margin-bottom: 20px; }
+        @keyframes sweepLeft { 0% { transform: rotate(15deg); } 100% { transform: rotate(45deg); } }
+        @keyframes sweepRight { 0% { transform: rotate(-15deg); } 100% { transform: rotate(-45deg); } }
+
+        /* --- TIMER --- */
+        #timer-display { 
+            display: flex; gap: 10px; justify-content: center; 
+            margin-bottom: 25px; min-height: 280px; align-items: center;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); perspective: 1000px;
+        }
+        .phase-change { animation: phaseFlash 0.6s ease-out; }
+        @keyframes phaseFlash {
+            0% { transform: scale(0.8); filter: brightness(5); opacity: 0; }
+            100% { transform: scale(1); filter: brightness(1); opacity: 1; }
+        }
+
+        .card { background: rgba(0,0,0,0.6); padding: 15px; border-radius: 20px; min-width: 90px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); }
+        .num { font-size: 2.5rem; font-weight: 900; display: block; color: #ffffff; }
+        .lab { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; margin-top: 5px; }
+        
+        .sixty-sec { font-size: 7.5rem; font-weight: 900; color: #ffffff; animation: pulseGlow 2s infinite; }
+        .thirty-sec { font-size: 11.5rem; font-weight: 900; color: #ffffff; text-shadow: 0 0 30px var(--v-cyan); animation: pulse 1s infinite; }
+        .super-giant-sec { font-size: 17rem; font-weight: 900; color: #ffffff; text-shadow: 0 0 60px var(--v-pink); animation: pulse 0.6s infinite; }
+        .ultra-giant-sec { 
+            font-size: 38rem; font-weight: 900; color: #ffffff;
+            text-shadow: 0 0 100px white, 0 0 200px var(--v-pink); animation: impact 0.3s infinite alternate; line-height: 0.7;
+        }
+
+        /* --- LIVE STATUS --- */
+        #flash-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 9999; }
+        .trigger-flash { animation: screenFlash 0.8s ease-out forwards; }
+        @keyframes screenFlash { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+
+        .live-status { display: flex; align-items: center; justify-content: center; gap: 20px; font-size: 4.5rem; font-weight: 900; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .dot { width: 35px; height: 35px; background: #ff0000; border-radius: 50%; box-shadow: 0 0 40px #ff0000; animation: blink 0.8s infinite; }
+
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes blink { 0%, 100% { opacity: 1; transform: scale(1.2); } 50% { opacity: 0.1; transform: scale(0.8); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes pulseGlow { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; transform: scale(1.02); } }
+        @keyframes impact { from { transform: scale(0.9); } to { transform: scale(1.1); } }
+
+        /* --- LIST & UI --- */
+        nav { margin: 20px 0; display: flex; gap: 8px; background: rgba(0,0,0,0.8); padding: 8px; border-radius: 50px; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .tab { padding: 10px 22px; border-radius: 30px; cursor: pointer; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; transition: 0.3s; color: rgba(255,255,255,0.4); }
+        .tab:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab.active { background: white; color: var(--v-purple); transform: scale(1.05); }
+        
+        .container { width: 95%; max-width: 900px; text-align: center; z-index: 10; }
+        
         #countries-grid { display: flex; flex-direction: column; gap: 12px; }
         
         .row { 
-            display: flex; align-items: center; background: var(--row-grad); 
-            border-radius: 60px; padding: 18px 40px; border: 1px solid rgba(255,255,255,0.1); 
-            opacity: 0; transform: translateX(-30px);
-            animation: slideIn 0.5s ease-out forwards;
-            width: 100%;
+            display: flex; align-items: center; opacity: 0; 
+            animation: swingIn 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; 
+            transition: transform 0.3s ease;
+        }
+        .row:hover { transform: translateX(10px) scale(1.01); z-index: 11; }
+        
+        @keyframes swingIn {
+            from { transform: rotateX(-30deg) translateY(30px); opacity: 0; }
+            to { transform: rotateX(0deg) translateY(0); opacity: 1; }
         }
 
-        @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
-
-        .pill-country { 
-            background: white; color: #000; padding: 10px 30px; 
-            border-radius: 30px; font-weight: 900; margin-right: 25px; 
-            min-width: 220px; 
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        .run-number { font-size: 2rem; font-weight: 900; width: 65px; font-style: italic; opacity: 1; text-align: center; color: #ffffff; }
+        
+        .row-content { 
+            flex-grow: 1; display: flex; align-items: center; padding: 15px 30px; 
+            background: var(--row-grad); border-radius: 60px; border: 1px solid rgba(255,255,255,0.1);
+            position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
+        
+        /* Shimmer Effect */
+        .row-content::after {
+            content: ''; position: absolute; top: -50%; left: -60%; width: 20%; height: 200%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(30deg); animation: shimmer 6s infinite;
+        }
+        @keyframes shimmer { 0% { left: -60%; } 20% { left: 120%; } 100% { left: 120%; } }
 
-        #timer-display { display: flex; gap: 10px; justify-content: center; margin-bottom: 25px; min-height: 120px; align-items: center; }
-        .card { background: rgba(0,0,0,0.7); padding: 15px; border-radius: 20px; min-width: 90px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
-        .num-timer { font-size: 2.5rem; font-weight: 900; display: block; color: #ffffff; }
-        .lab { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; }
-
-        .stage-light { position: fixed; top: -50%; width: 40vw; height: 200%; background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent); pointer-events: none; opacity: 0; transition: opacity 2s; z-index: 1; }
-        .show-lights .stage-light { opacity: 1; animation: swing 10s infinite alternate ease-in-out; }
-        @keyframes swing { from { transform: rotate(15deg); } to { transform: rotate(35deg); } }
+        .pill-country { background: white; color: #000; padding: 7px 20px; border-radius: 25px; font-weight: 900; margin-right: 15px; min-width: 130px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .pill-info { background: rgba(255,255,255,0.12); padding: 7px 16px; border-radius: 25px; font-size: 0.9rem; margin-right: 10px; border: 1px solid rgba(255,255,255,0.05); }
+        
+        @media (max-width: 768px) {
+            .intro-text-main { font-size: 3rem; }
+            .logo-wrap { max-width: 300px; }
+            .ultra-giant-sec { font-size: 18rem; }
+            .live-status { font-size: 2.2rem; }
+            #timer-display { min-height: 200px; }
+            .row-content { flex-direction: column; padding: 15px; text-align: center; gap: 5px; border-radius: 20px; }
+            .pill-country { margin-right: 0; margin-bottom: 5px; width: 100%; }
+            .pill-info { margin-right: 0; width: 100%; }
+        }
     </style>
 </head>
-<body class="intro-active">
+<body>
+    <audio id="theme-song" src="http://googleusercontent.com/file_content/0"></audio>
 
-    <audio id="bg-audio" loop autoplay>
-        <source src="https://www.image2url.com/r2/default/audio/1778674427620-e9d3cf4d-a74e-4bd6-989c-80757131572e.mp3" type="audio/mpeg">
-    </audio>
+    <div id="intro-overlay">
+        <h1 class="intro-text-main">VIENNA 2026</h1>
+        <div class="intro-text-sub">Eurovision Song Contest</div>
+    </div>
 
-    <div class="stage-light" style="left: -10%;"></div>
-    <div class="stage-light" style="right: -10%;"></div>
+    <div id="flash-overlay"></div>
+    <div class="stage-light light-1"></div>
+    <div class="stage-light light-2"></div>
 
-    <div id="viewport-wrapper">
+    <div class="main-wrapper">
         <nav>
             <div class="tab active" onclick="changeView('sf1', this)">Semi 1</div>
             <div class="tab" onclick="changeView('sf2', this)">Semi 2</div>
@@ -117,71 +203,81 @@
 
         <div class="container">
             <div class="logo-wrap">
-                <img src="https://storage.googleapis.com/eurovision-com.appspot.com/renditions/public/cms/frame-2147206933png/Frame%202147206933-width%3D600.png" alt="Eurovision">
+                <img src="https://storage.googleapis.com/eurovision-com.appspot.com/renditions/public/cms/frame-2147206933png/Frame%202147206933-width%3D600.png" alt="ESC 2026 Logo">
             </div>
             <div id="timer-display"></div>
-            <h3 style="letter-spacing:4px; text-transform:uppercase; margin-bottom:20px; font-weight:300;">Running Order</h3>
+            <h3 id="lineup-title" style="letter-spacing:3px; text-transform:uppercase; margin-bottom:25px; text-shadow: 0 4px 10px rgba(0,0,0,0.3);">First Semi-Final <span>Running Order</span></h3>
             <div id="countries-grid"></div>
         </div>
     </div>
 
     <script>
-        window.addEventListener('load', () => setTimeout(() => document.body.classList.remove('intro-active'), 10000));
-        const audio = document.getElementById("bg-audio");
-        const playMusic = () => audio.play().catch(() => {});
-        ['click', 'touchstart'].forEach(e => document.addEventListener(e, playMusic, {once:true}));
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('intro-overlay').classList.add('intro-hidden');
+                document.body.classList.add('show-main');
+            }, 2500); 
+        });
+
+        const themeAudio = document.getElementById('theme-song');
+        let audioTriggered = false;
 
         const participants = {
             sf1: [
-                {n:"Moldova", a:"Satoshi — \"Viva, Moldova!\"", num:"01"}, 
-                {n:"Sweden", a:"Felicia — \"My System\"", num:"02"}, 
-                {n:"Croatia", a:"Lelek — \"Andromeda\"", num:"03"}, 
-                {n:"Greece", a:"Akylas — \"Ferto\"", num:"04"}, 
-                {n:"Portugal", a:"Bandidos do Cante — \"Rosa\"", num:"05"}, 
-                {n:"Georgia", a:"Bzikebi — \"On Replay\"", num:"06"}, 
-                {n:"Finland", a:"Linda Lampenius & Pete Parkkonen — \"Liekinheitin\"", num:"07"}, 
-                {n:"Montenegro", a:"Tamara Živković — \"Nova zora\"", num:"08"}, 
-                {n:"Estonia", a:"Vanilla Ninja — \"Too Epic to Be True\"", num:"09"}, 
-                {n:"Israel", a:"Noam Bettan — \"Michelle\"", num:"10"}, 
-                {n:"Belgium", a:"Essyla — \"Dancing on the Ice\"", num:"11"}, 
-                {n:"Lithuania", a:"Lion Ceccah — \"Sólo quiero más\"", num:"12"}, 
-                {n:"San Marino", a:"Senhit ft. Boy George — \"Superstar\"", num:"13"}, 
-                {n:"Poland", a:"ALICJA — \"Pray\"", num:"14"}, 
-                {n:"Serbia", a:"Lavina — \"Kraj mene\"", num:"15"}
+                {n:"Moldova", a:"Satoshi", s:"Viva, Moldova!", num:"01"},
+                {n:"Sweden", a:"Felicia", s:"My System", num:"02"},
+                {n:"Croatia", a:"Lelek", s:"Andromeda", num:"03"},
+                {n:"Greece", a:"Akylas", s:"Ferto", num:"04"},
+                {n:"Portugal", a:"Bandidos do Cante", s:"Rosa", num:"05"},
+                {n:"Georgia", a:"Bzikebi", s:"On Replay", num:"06"},
+                {n:"Italy", a:"Sal Da Vinci", s:"Per Sempre Sì", pq:true, sortIdx: 6.5},
+                {n:"Finland", a:"Pete Parkkonen", s:"Liekinheitin", num:"07"},
+                {n:"Montenegro", a:"Tamara Živković", s:"Nova Zora", num:"08"},
+                {n:"Estonia", a:"Vanilla Ninja", s:"Too Epic", num:"09"},
+                {n:"Israel", a:"Noam Bettan", s:"Michelle", num:"10"},
+                {n:"Germany", a:"Sarah Engels", s:"Fire", pq:true, sortIdx: 10.5},
+                {n:"Belgium", a:"Essyla", s:"Dancing on the Ice", num:"11"},
+                {n:"Lithuania", a:"Lion Ceccah", s:"Sólo quiero más", num:"12"},
+                {n:"San Marino", a:"Senhit", s:"Superstar", num:"13"},
+                {n:"Poland", a:"ALICJA", s:"Pray", num:"14"},
+                {n:"Serbia", a:"Lavina", s:"Kraj Mene", num:"15"}
             ],
             sf2: [
-                {n:"Bulgaria", a:"Dara — \"Bangaranga\"", num:"01"}, 
-                {n:"Azerbaijan", a:"Jiva — \"Just Go\"", num:"02"}, 
-                {n:"Romania", a:"Alexandra Căpitănescu — \"Choke Me\"", num:"03"}, 
-                {n:"Luxembourg", a:"Eva Marija — \"Mother Nature\"", num:"04"}, 
-                {n:"Czechia", a:"Daniel Žižka — \"Crossroads\"", num:"05"}, 
-                {n:"Armenia", a:"Simón — \"Paloma Rumba\"", num:"06"}, 
-                {n:"Switzerland", a:"Veronica Fusaro — \"Alice\"", num:"07"}, 
-                {n:"Cyprus", a:"Antigoni — \"Jalla\"", num:"08"}, 
-                {n:"Latvia", a:"Atvara — \"Ēnā\"", num:"09"}, 
-                {n:"Denmark", a:"Søren Torpegaard Lund — \"Før vi går hjem\"", num:"10"}, 
-                {n:"Australia", a:"Delta Goodrem — \"Eclipse\"", num:"11"}, 
-                {n:"Ukraine", a:"Leléka — \"Ridnym\"", num:"12"}, 
-                {n:"Albania", a:"Alis — \"Nân\"", num:"13"}, 
-                {n:"Malta", a:"Aidan — \"Bella\"", num:"14"}, 
-                {n:"Norway", a:"Jonas Lovv — \"Ya Ya Ya\"", num:"15"}
+                {n:"Bulgaria", a:"Dara", s:"Bangaranga", num:"01"},
+                {n:"Azerbaijan", a:"Jiva", s:"Just Go", num:"02"},
+                {n:"Romania", a:"Alexandra Căpitănescu", s:"Choke Me", num:"03"},
+                {n:"Luxembourg", a:"Eva Marija", s:"Mother Nature", num:"04"},
+                {n:"Czechia", a:"Daniel Zizka", s:"Crossroads", num:"05"},
+                {n:"France", a:"Monroe", s:"Regarde !", pq:true, sortIdx: 5.5},
+                {n:"Armenia", a:"Simón", s:"Paloma Rumba", num:"06"},
+                {n:"Switzerland", a:"Veronica Fusaro", s:"Alice", num:"07"},
+                {n:"Cyprus", a:"Antigoni", s:"Jalla", num:"08"},
+                {n:"Austria", a:"Cosmó", s:"Tanzschein", pq:true, sortIdx: 8.5},
+                {n:"Latvia", a:"Atvara", s:"Ēnā", num:"09"},
+                {n:"Denmark", a:"Søren Torpegaard Lund", s:"Før vi går hjem", num:"10"},
+                {n:"Australia", a:"Delta Goodrem", s:"Eclipse", num:"11"},
+                {n:"Ukraine", a:"Leléka", s:"Ridnym", num:"12"},
+                {n:"United Kingdom", a:"LOOK MUM NO COMPUTER", s:"Eins, Zwei, Drei", pq:true, sortIdx: 12.5},
+                {n:"Albania", a:"Alis", s:"Nân", num:"13"},
+                {n:"Malta", a:"Aidan", s:"Bella", num:"14"},
+                {n:"Norway", a:"Jonas Lovv", s:"Ya Ya Ya", num:"15"}
             ],
             gf: [
-                {n:"Austria", a:"Cosmó — \"Tanzschein\"", num:"25"}, 
-                {n:"France", a:"Monroe — \"Regarde !\"", num:"?"}, 
-                {n:"Germany", a:"Sarah Engels — \"Fire\"", num:"?"}, 
-                {n:"Italy", a:"Sal Da Vinci — \"Per sempre sì\"", num:"?"}, 
-                {n:"United Kingdom", a:"Look Mum No Computer — \"Eins, Zwei, Drei\"", num:"?"},
-                {n:"Moldova", a:"Satoshi — \"Viva, Moldova!\"", num:"?"}, 
-                {n:"Sweden", a:"Felicia — \"My System\"", num:"?"}, 
-                {n:"Croatia", a:"Lelek — \"Andromeda\"", num:"?"}, 
-                {n:"Greece", a:"Akylas — \"Ferto\"", num:"?"}, 
-                {n:"Finland", a:"Linda & Pete — \"Liekinheitin\"", num:"?"}, 
-                {n:"Israel", a:"Noam Bettan — \"Michelle\"", num:"?"}, 
-                {n:"Belgium", a:"Essyla — \"Dancing on the Ice\"", num:"?"}, 
-                {n:"Lithuania", a:"Lion Ceccah — \"Sólo quiero más\"", num:"?"},
-                {n:"Poland", a:"ALICJA — \"Pray\"", num:"?"}, 
-                {n:"Serbia", a:"Lavina — \"Kraj mene\"", num:"?"}
+                {n:"Austria", a:"Cosmó", s:"Tanzschein", num:"?", pq:true, sortIdx: 1},
+                {n:"France", a:"Monroe", s:"Regarde !", num:"?", pq:true, sortIdx: 2},
+                {n:"Germany", a:"Sarah Engels", s:"Fire", num:"?", pq:true, sortIdx: 3},
+                {n:"Italy", a:"Sal Da Vinci", s:"Per Sempre Sì", num:"?", pq:true, sortIdx: 4},
+                {n:"United Kingdom", a:"LOOK MUM NO COMPUTER", s:"Eins, Zwei, Drei", num:"?", pq:true, sortIdx: 5},
+                {n:"Finland", a:"Pete Parkkonen", s:"Liekinheitin", num:"?", sortIdx: 6},
+                {n:"Serbia", a:"Lavina", s:"Kraj Mene", num:"?", sortIdx: 7},
+                {n:"Moldova", a:"Satoshi", s:"Viva, Moldova!", num:"?", sortIdx: 8},
+                {n:"Lithuania", a:"Lion Ceccah", s:"Sólo quiero más", num:"?", sortIdx: 9},
+                {n:"Sweden", a:"Felicia", s:"My System", num:"?", sortIdx: 10},
+                {n:"Croatia", a:"Lelek", s:"Andromeda", num:"?", sortIdx: 11},
+                {n:"Belgium", a:"Essyla", s:"Dancing on the Ice", num:"?", sortIdx: 12},
+                {n:"Israel", a:"Noam Bettan", s:"Michelle", num:"?", sortIdx: 13},
+                {n:"Poland", a:"ALICJA", s:"Pray", num:"?", sortIdx: 14},
+                {n:"Greece", a:"Akylas", s:"Ferto", num:"?", sortIdx: 15}
             ]
         };
 
@@ -192,56 +288,101 @@
         };
 
         let currentView = 'sf1';
+        let lastPhase = "";
 
         function changeView(view, el) {
-            if (currentView === view) return;
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
-            const grid = document.getElementById('countries-grid');
-            grid.style.opacity = '0';
-            setTimeout(() => {
-                currentView = view;
-                renderList();
-                updateTimer();
-                grid.style.opacity = '1';
-            }, 400);
+            currentView = view;
+            const titles = {sf1: "First Semi-Final", sf2: "Second Semi-Final", gf: "Grand Final"};
+            document.getElementById('lineup-title').innerHTML = titles[view] + " <span>Running Order</span>";
+            audioTriggered = false; 
+            renderList();
+            updateTimer();
         }
 
         function renderList() {
             const grid = document.getElementById('countries-grid');
             grid.innerHTML = "";
-            participants[currentView].forEach((p, index) => {
+            let list = [...participants[currentView]].sort((a,b) => (a.sortIdx || parseInt(a.num)) - (b.sortIdx || parseInt(b.num)));
+            list.forEach((p, i) => {
                 const row = document.createElement('div');
                 row.className = 'row';
-                row.style.animationDelay = `${index * 0.08}s`; 
-                row.innerHTML = `
-                    <div style="font-weight:900; width:40px; opacity:0.5; font-size: 1.2rem;">${p.num}</div>
-                    <div class="pill-country">${p.n}</div>
-                    <div style="font-weight:300; font-size: 1rem;">🎤 ${p.a}</div>
-                `;
+                row.style.animationDelay = (i * 0.08) + "s";
+                const num = (p.pq && currentView !== 'gf') ? '★' : p.num;
+                row.innerHTML = `<div class="run-number">${num}</div><div class="row-content"><div class="pill-country">${p.n}</div><div class="pill-info">🎤 ${p.a}</div><div class="pill-info">🎵 ${p.s}</div></div>`;
                 grid.appendChild(row);
             });
+        }
+
+        function triggerPhaseAnimation() {
+            const display = document.getElementById('timer-display');
+            display.classList.remove('phase-change');
+            void display.offsetWidth;
+            display.classList.add('phase-change');
         }
 
         function updateTimer() {
             const now = new Date().getTime();
             const targetDate = eventDates[currentView];
-            const showEndTime = targetDate + (4 * 60 * 60 * 1000); 
             const diff = targetDate - now;
             const display = document.getElementById('timer-display');
 
+            const triggerTimeMs = 173000;
+            if (diff <= triggerTimeMs && diff > 0 && !audioTriggered) {
+                themeAudio.play().catch(() => {});
+                audioTriggered = true;
+            }
+
+            const showEndTime = targetDate + (4 * 60 * 60 * 1000); 
             if (now >= showEndTime) {
-                let message = (currentView === 'gf') ? "SEE YOU IN 2027" : "WATCH THE GRAND FINAL ON <br> MAY 16th 21:00 CEST";
-                display.innerHTML = `<div class="post-event-msg">${message}</div>`;
+                display.innerHTML = currentView === 'gf' ? "<h2>SEE YOU IN 2027</h2>" : "<h3>WATCH THE GRAND FINAL ON<br>MAY 16th 21:00 CEST</h3>";
+                document.body.classList.remove('show-lights');
                 return;
             }
-            if (now >= targetDate) {
-                display.innerHTML = `<div style="font-size:3.5rem; font-weight:900;">LIVE NOW</div>`;
-                document.body.classList.add('show-lights');
+
+            if (diff <= 60000 && diff > 0) document.body.classList.add('show-lights');
+            else if (diff > 60000) document.body.classList.remove('show-lights');
+
+            if (diff <= 0) {
+                if(lastPhase !== "live") {
+                    document.getElementById('flash-overlay').classList.add('trigger-flash');
+                    lastPhase = "live";
+                }
+                display.innerHTML = `<div class="live-status"><div class="dot"></div> LIVE NOW</div>`;
                 return;
             }
-            const d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
-            display.innerHTML = `<div class="card"><span class="num-timer">${d}</span><span class="lab">Days</span></div><div class="card"><span class="num-timer">${h}</span><span class="lab">Hrs</span></div><div class="card"><span class="num-timer">${m}</span><span class="lab">Min</span></div><div class="card"><span class="num-timer">${s}</span><span class="lab">Sec</span></div>`;
+
+            const totalSecs = Math.ceil(diff / 1000);
+            let currentPhase = "";
+            let content = "";
+
+            if (totalSecs <= 3) {
+                currentPhase = "ultra";
+                content = `<div class="ultra-giant-sec">${totalSecs}</div>`;
+            } else if (totalSecs <= 10) {
+                currentPhase = "super";
+                content = `<div class="super-giant-sec">${totalSecs}</div>`;
+            } else if (totalSecs <= 30) {
+                currentPhase = "thirty";
+                content = `<div class="thirty-sec">${totalSecs}</div>`;
+            } else if (totalSecs <= 60) {
+                currentPhase = "sixty";
+                content = `<div class="sixty-sec">${totalSecs}</div>`;
+            } else {
+                currentPhase = "normal";
+                const d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+                content = (d > 0 ? `<div class="card"><span class="num">${d}</span><span class="lab">DAYS</span></div>` : "") +
+                          (h > 0 || d > 0 ? `<div class="card"><span class="num">${h}</span><span class="lab">HRS</span></div>` : "") +
+                          (m > 0 || h > 0 || d > 0 ? `<div class="card"><span class="num">${m}</span><span class="lab">MIN</span></div>` : "") +
+                          `<div class="card"><span class="num">${s}</span><span class="lab">SEC</span></div>`;
+            }
+
+            if(lastPhase !== currentPhase) {
+                triggerPhaseAnimation();
+                lastPhase = currentPhase;
+            }
+            display.innerHTML = content;
         }
 
         setInterval(updateTimer, 1000);
