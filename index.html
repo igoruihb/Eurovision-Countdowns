@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ESC 2026 | Vienna Live</title>
+    <title>ESC 2026 | Grand Final Live</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&display=swap');
 
@@ -29,7 +29,7 @@
 
         @keyframes gradientBG { 0% {background-position:0% 50%} 50% {background-position:100% 50%} 100% {background-position:0% 50%} }
 
-        /* --- INTRO ANIMATION SEQUENCE --- */
+        /* --- INTRO ANIMATION --- */
         #intro-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #05081f; 
@@ -48,8 +48,7 @@
         .intro-text-sub {
             font-size: 1.2rem; font-weight: 600; text-transform: uppercase;
             letter-spacing: 12px; margin-top: 10px; color: rgba(255,255,255,0.7);
-            animation: slideUpSub 1s ease-out forwards;
-            opacity: 0; transform: translateY(20px); animation-delay: 0.3s;
+            opacity: 0; transform: translateY(20px); animation: slideUpSub 1s ease-out forwards 0.3s;
         }
 
         @keyframes introPulse {
@@ -58,7 +57,7 @@
         }
         @keyframes slideUpSub { to { opacity: 1; transform: translateY(0); } }
 
-        /* --- MAIN CONTENT ENTRANCE --- */
+        /* --- MAIN WRAPPER --- */
         .main-wrapper {
             opacity: 0; transform: translateY(40px);
             transition: opacity 1s ease 0.6s, transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.6s;
@@ -66,7 +65,6 @@
         }
         body.show-main .main-wrapper { opacity: 1; transform: translateY(0); }
 
-        /* --- LOGO SECTION --- */
         .logo-wrap { 
             width: 90%; max-width: 480px; margin: 40px auto 20px; 
             display: flex; justify-content: center;
@@ -76,7 +74,7 @@
         body.show-main .logo-wrap { transform: scale(1); }
         .logo-wrap img { width: 100%; height: auto; filter: drop-shadow(0 0 20px rgba(0,0,0,0.3)); }
 
-        /* --- SPOTLIGHTS --- */
+        /* --- STAGE LIGHTS --- */
         .stage-light {
             position: fixed; top: -50%; width: 35vw; height: 200%;
             background: linear-gradient(to bottom, rgba(255,255,255,0.25), transparent);
@@ -129,14 +127,13 @@
         @keyframes pulseGlow { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; transform: scale(1.02); } }
         @keyframes impact { from { transform: scale(0.9); } to { transform: scale(1.1); } }
 
-        /* --- LIST & UI --- */
+        /* --- LIST UI --- */
         nav { margin: 20px 0; display: flex; gap: 8px; background: rgba(0,0,0,0.8); padding: 8px; border-radius: 50px; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .tab { padding: 10px 22px; border-radius: 30px; cursor: pointer; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; transition: 0.3s; color: rgba(255,255,255,0.4); }
         .tab:hover { color: white; background: rgba(255,255,255,0.1); }
         .tab.active { background: white; color: var(--v-purple); transform: scale(1.05); }
         
         .container { width: 95%; max-width: 900px; text-align: center; z-index: 10; }
-        
         #countries-grid { display: flex; flex-direction: column; gap: 12px; }
         
         .row { 
@@ -159,7 +156,7 @@
             position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         
-        /* Shimmer Effect */
+        /* Shimmer */
         .row-content::after {
             content: ''; position: absolute; top: -50%; left: -60%; width: 20%; height: 200%;
             background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
@@ -175,7 +172,6 @@
             .logo-wrap { max-width: 300px; }
             .ultra-giant-sec { font-size: 18rem; }
             .live-status { font-size: 2.2rem; }
-            #timer-display { min-height: 200px; }
             .row-content { flex-direction: column; padding: 15px; text-align: center; gap: 5px; border-radius: 20px; }
             .pill-country { margin-right: 0; margin-bottom: 5px; width: 100%; }
             .pill-info { margin-right: 0; width: 100%; }
@@ -187,7 +183,7 @@
 
     <div id="intro-overlay">
         <h1 class="intro-text-main">VIENNA 2026</h1>
-        <div class="intro-text-sub">Eurovision Song Contest</div>
+        <div class="intro-text-sub">Grand Final Lineup</div>
     </div>
 
     <div id="flash-overlay"></div>
@@ -196,9 +192,9 @@
 
     <div class="main-wrapper">
         <nav>
-            <div class="tab active" onclick="changeView('sf1', this)">Semi 1</div>
+            <div class="tab" onclick="changeView('sf1', this)">Semi 1</div>
             <div class="tab" onclick="changeView('sf2', this)">Semi 2</div>
-            <div class="tab" onclick="changeView('gf', this)">Final</div>
+            <div class="tab active" onclick="changeView('gf', this)">Grand Final</div>
         </nav>
 
         <div class="container">
@@ -206,7 +202,7 @@
                 <img src="https://storage.googleapis.com/eurovision-com.appspot.com/renditions/public/cms/frame-2147206933png/Frame%202147206933-width%3D600.png" alt="ESC 2026 Logo">
             </div>
             <div id="timer-display"></div>
-            <h3 id="lineup-title" style="letter-spacing:3px; text-transform:uppercase; margin-bottom:25px; text-shadow: 0 4px 10px rgba(0,0,0,0.3);">First Semi-Final <span>Running Order</span></h3>
+            <h3 id="lineup-title" style="letter-spacing:3px; text-transform:uppercase; margin-bottom:25px; text-shadow: 0 4px 10px rgba(0,0,0,0.3);">Grand Final <span>Running Order</span></h3>
             <div id="countries-grid"></div>
         </div>
     </div>
@@ -263,21 +259,31 @@
                 {n:"Norway", a:"Jonas Lovv", s:"Ya Ya Ya", num:"15"}
             ],
             gf: [
-                {n:"Austria", a:"Cosmó", s:"Tanzschein", num:"?", pq:true, sortIdx: 1},
-                {n:"France", a:"Monroe", s:"Regarde !", num:"?", pq:true, sortIdx: 2},
-                {n:"Germany", a:"Sarah Engels", s:"Fire", num:"?", pq:true, sortIdx: 3},
-                {n:"Italy", a:"Sal Da Vinci", s:"Per Sempre Sì", num:"?", pq:true, sortIdx: 4},
-                {n:"United Kingdom", a:"LOOK MUM NO COMPUTER", s:"Eins, Zwei, Drei", num:"?", pq:true, sortIdx: 5},
-                {n:"Finland", a:"Pete Parkkonen", s:"Liekinheitin", num:"?", sortIdx: 6},
-                {n:"Serbia", a:"Lavina", s:"Kraj Mene", num:"?", sortIdx: 7},
-                {n:"Moldova", a:"Satoshi", s:"Viva, Moldova!", num:"?", sortIdx: 8},
-                {n:"Lithuania", a:"Lion Ceccah", s:"Sólo quiero más", num:"?", sortIdx: 9},
-                {n:"Sweden", a:"Felicia", s:"My System", num:"?", sortIdx: 10},
-                {n:"Croatia", a:"Lelek", s:"Andromeda", num:"?", sortIdx: 11},
-                {n:"Belgium", a:"Essyla", s:"Dancing on the Ice", num:"?", sortIdx: 12},
-                {n:"Israel", a:"Noam Bettan", s:"Michelle", num:"?", sortIdx: 13},
-                {n:"Poland", a:"ALICJA", s:"Pray", num:"?", sortIdx: 14},
-                {n:"Greece", a:"Akylas", s:"Ferto", num:"?", sortIdx: 15}
+                {n:"Denmark", a:"Søren Torpegaard Lund", s:"Før vi går hjem", num:"01"},
+                {n:"Germany", a:"Sarah Engels", s:"Fire", num:"02"},
+                {n:"Israel", a:"Noam Bettan", s:"Michelle", num:"03"},
+                {n:"Belgium", a:"Essyla", s:"Dancing on the Ice", num:"04"},
+                {n:"Albania", a:"Alis", s:"Nân", num:"05"},
+                {n:"Greece", a:"Akylas", s:"Ferto", num:"06"},
+                {n:"Ukraine", a:"Leléka", s:"Ridnym", num:"07"},
+                {n:"Australia", a:"Delta Goodrem", s:"Eclipse", num:"08"},
+                {n:"Serbia", a:"Lavina", s:"Kraj Mene", num:"09"},
+                {n:"Malta", a:"Aidan", s:"Bella", num:"10"},
+                {n:"Czechia", a:"Daniel Zizka", s:"Crossroads", num:"11"},
+                {n:"Bulgaria", a:"Dara", s:"Bangaranga", num:"12"},
+                {n:"Croatia", a:"Lelek", s:"Andromeda", num:"13"},
+                {n:"United Kingdom", a:"LOOK MUM NO COMPUTER", s:"Eins, Zwei, Drei", num:"14"},
+                {n:"France", a:"Monroe", s:"Regarde !", num:"15"},
+                {n:"Moldova", a:"Satoshi", s:"Viva, Moldova!", num:"16"},
+                {n:"Finland", a:"Pete Parkkonen", s:"Liekinheitin", num:"17"},
+                {n:"Poland", a:"ALICJA", s:"Pray", num:"18"},
+                {n:"Lithuania", a:"Lion Ceccah", s:"Sólo quiero más", num:"19"},
+                {n:"Sweden", a:"Felicia", s:"My System", num:"20"},
+                {n:"Cyprus", a:"Antigoni", s:"Jalla", num:"21"},
+                {n:"Italy", a:"Sal Da Vinci", s:"Per Sempre Sì", num:"22"},
+                {n:"Norway", a:"Jonas Lovv", s:"Ya Ya Ya", num:"23"},
+                {n:"Romania", a:"Alexandra Căpitănescu", s:"Choke Me", num:"24"},
+                {n:"Austria", a:"Cosmó", s:"Tanzschein", num:"25"}
             ]
         };
 
@@ -287,7 +293,7 @@
             gf: new Date("May 16, 2026 21:00:00").getTime()
         };
 
-        let currentView = 'sf1';
+        let currentView = 'gf';
         let lastPhase = "";
 
         function changeView(view, el) {
@@ -308,7 +314,7 @@
             list.forEach((p, i) => {
                 const row = document.createElement('div');
                 row.className = 'row';
-                row.style.animationDelay = (i * 0.08) + "s";
+                row.style.animationDelay = (i * 0.05) + "s";
                 const num = (p.pq && currentView !== 'gf') ? '★' : p.num;
                 row.innerHTML = `<div class="run-number">${num}</div><div class="row-content"><div class="pill-country">${p.n}</div><div class="pill-info">🎤 ${p.a}</div><div class="pill-info">🎵 ${p.s}</div></div>`;
                 grid.appendChild(row);
